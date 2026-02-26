@@ -2,6 +2,9 @@
 
 ClauDex Coder - When Claude and Codex code together
 
+Author: Mike Lopez <e@mikelopez.com>
+Copyright (C) 2026 Mike Lopez <e@mikelopez.com>
+
 ## Requirements
 
 - Linux only
@@ -65,11 +68,13 @@ codex --version
 claudex-coder [branch-name] <prompt...>
 ```
 
+To use the current branch, pass an empty string for `branch-name`.
+
 Examples:
 
 ```bash
 # Use current branch
-claudex-coder "add caching to API responses"
+claudex-coder "" "add caching to API responses"
 ```
 
 ```bash
@@ -80,3 +85,13 @@ claudex-coder feature/api-caching "add caching to API responses"
 ## License
 
 GPL-2.0
+
+## Forking and GPL-2.0 Compliance
+
+If you fork or redistribute this project, GPL-2.0 requires that you:
+
+- Keep copyright and license notices in place, including original author attribution.
+- Include a copy of the GPL-2.0 license with your distribution.
+- Mark modified files with clear change notices and dates.
+- License derivative works under GPL-2.0 when distributed.
+- Provide complete corresponding source code when distributing binaries or executables.

@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ClauDex Coder - When Claude and Codex code together
+# Author: Mike Lopez <e@mikelopez.com>
+# Copyright (C) 2026 Mike Lopez <e@mikelopez.com>
+# SPDX-License-Identifier: GPL-2.0-only
+
 set -euo pipefail
 
 echo "ClauDex Coder - When Claude and Codex code together"
