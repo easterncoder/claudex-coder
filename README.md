@@ -16,17 +16,18 @@ For each run, it:
 - Runs implementation with Claude `/code-it`.
 - Runs Codex `$code-review`.
 - Repeats fixes with Claude `/code-fix` plus Codex re-review until `.ai/branches/<branch-slug>/code-review.md` contains `ALL GOOD`.
-- Stops with a clear error if `claude` or `codex` is missing from `PATH`.
+- Stops with a clear error if `git`, `gh`, `claude`, or `codex` is missing from `PATH`.
 - Uses `MAX_TRIES` and `SLEEP_SECS` environment variables to control retry behavior.
 
-Author: Mike Lopez <e@mikelopez.com>
-Copyright (C) 2026 Mike Lopez <e@mikelopez.com>
+- Author: Mike Lopez <e@mikelopez.com>
+- Copyright (C) 2026 Mike Lopez <e@mikelopez.com>
 
 ## Requirements
 
 - Linux only
 - `bash`
 - `git`
+- [GitHub CLI (`gh`)](https://cli.github.com/)
 - [Claude CLI](https://docs.anthropic.com/en/docs/claude-code)
 - [Codex CLI](https://developers.openai.com/codex/cli/)
 
@@ -75,6 +76,8 @@ You must install skills into both directories for this workflow to work.
 Verify required CLIs are available:
 
 ```bash
+git --version
+gh --version
 claude --version
 codex --version
 ```

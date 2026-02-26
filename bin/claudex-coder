@@ -25,6 +25,8 @@ echo Prompt: $PROMPT
 echo
 
 # Fail early if tools aren't installed
+command -v git    >/dev/null || { echo "git not found in PATH"    >&2; exit 127; }
+command -v gh     >/dev/null || { echo "gh not found in PATH"     >&2; exit 127; }
 command -v claude >/dev/null || { echo "claude not found in PATH" >&2; exit 127; }
 command -v codex  >/dev/null || { echo "codex not found in PATH"  >&2; exit 127; }
 
