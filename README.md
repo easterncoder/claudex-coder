@@ -51,7 +51,7 @@ cp -R skills/. "$HOME/.codex/skills/"
 mkdir -p "$HOME/.claude/skills"
 cp -R skills/. "$HOME/.claude/skills/"
 ```
-You can install into one or both of these directories based on your workflow.
+You must install skills into both directories for this workflow to work.
 
 ## Setup Check
 
