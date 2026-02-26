@@ -1,0 +1,3 @@
+interface:
+  display_name: "Plan Done"
+  short_description: "Delete branch plan artifacts folder"
