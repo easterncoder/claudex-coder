@@ -2,6 +2,23 @@
 
 ClauDex Coder - When Claude and Codex code together
 
+## What It Does
+
+`claudex-coder` orchestrates a Claude plus Codex workflow that plans, reviews, implements, and re-reviews until quality gates pass.
+
+For each run, it:
+
+- Accepts a branch name plus a prompt.
+- Uses the current branch when branch name is empty, or creates a new branch when a branch name is provided.
+- Sends your request to Claude with `/plan-it`.
+- Runs Codex `$plan-review`.
+- Repeats plan updates with Claude `/plan-update` plus Codex re-review until `.ai/branches/<branch-slug>/plan-review.md` contains `ALL GOOD`.
+- Runs implementation with Claude `/code-it`.
+- Runs Codex `$code-review`.
+- Repeats fixes with Claude `/code-fix` plus Codex re-review until `.ai/branches/<branch-slug>/code-review.md` contains `ALL GOOD`.
+- Stops with a clear error if `claude` or `codex` is missing from `PATH`.
+- Uses `MAX_TRIES` and `SLEEP_SECS` environment variables to control retry behavior.
+
 Author: Mike Lopez <e@mikelopez.com>
 Copyright (C) 2026 Mike Lopez <e@mikelopez.com>
 
