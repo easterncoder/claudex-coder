@@ -55,9 +55,9 @@ review_loop() {
 
     echo "- Cursor is reviewing the $label again..."
     if [[ "$label" == "Plan" ]]; then
-      cursor-agent $CURSOR_BASE_ARGS --continue '$plan-review' >/dev/null 2>&1
+      cursor-agent $CURSOR_BASE_ARGS --continue '/plan-review' >/dev/null 2>&1
     else
-      cursor-agent $CURSOR_BASE_ARGS --continue '$code-review' >/dev/null 2>&1
+      cursor-agent $CURSOR_BASE_ARGS --continue '/code-review' >/dev/null 2>&1
     fi
 
     sleep "$SLEEP_SECS"
@@ -83,7 +83,7 @@ echo "Claude is planning..."
 claude -p "$PROMPT" >/dev/null 2>&1
 
 echo "Cursor is reviewing the plan..."
-cursor-agent $CURSOR_BASE_ARGS '$plan-review' >/dev/null 2>&1
+cursor-agent $CURSOR_BASE_ARGS '/plan-review' >/dev/null 2>&1
 
 review_loop "Plan" "$PLAN_FILE" "/plan-update"
 
@@ -92,7 +92,7 @@ echo "Claude is coding it out..."
 claude -c -p "/code-it" >/dev/null 2>&1
 
 echo "Cursor is reviewing Claude's code..."
-cursor-agent $CURSOR_BASE_ARGS --continue '$code-review' >/dev/null 2>&1
+cursor-agent $CURSOR_BASE_ARGS --continue '/code-review' >/dev/null 2>&1
 
 review_loop "Code" "$CODE_FILE" "/code-fix"
 
