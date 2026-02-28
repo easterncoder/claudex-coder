@@ -32,6 +32,7 @@ command -v codex  >/dev/null || { echo "codex not found in PATH"  >&2; exit 127;
 
 MAX_TRIES="${MAX_TRIES:-20}"
 SLEEP_SECS="${SLEEP_SECS:-0.2}"
+CODEX_BASE_ARGS="--sandbox workspace-write -a never"
 
 review_loop() {
   local label="$1"
@@ -54,9 +55,9 @@ review_loop() {
 
     echo "- Codex is reviewing the $label again..."
     if [[ "$label" == "Plan" ]]; then
-      codex --sandbox workspace-write -a never exec '$plan-review' resume --last >/dev/null 2>&1
+      codex $CODEX_BASE_ARGS exec '$plan-review' resume --last >/dev/null 2>&1
     else
-      codex --sandbox workspace-write -a never exec '$code-review' resume --last >/dev/null 2>&1
+      codex $CODEX_BASE_ARGS exec '$code-review' resume --last >/dev/null 2>&1
     fi
 
     sleep "$SLEEP_SECS"
@@ -82,7 +83,7 @@ echo "Claude is planning..."
 claude -p "$PROMPT" >/dev/null 2>&1
 
 echo "Codex is reviewing the plan..."
-codex --sandbox workspace-write -a never exec '$plan-review' >/dev/null 2>&1
+codex $CODEX_BASE_ARGS exec '$plan-review' >/dev/null 2>&1
 
 review_loop "Plan" "$PLAN_FILE" "/plan-update"
 
@@ -91,7 +92,7 @@ echo "Claude is coding it out..."
 claude -c -p "/code-it" >/dev/null 2>&1
 
 echo "Codex is reviewing Claude's code..."
-codex --sandbox workspace-write -a never exec '$code-review' resume --last >/dev/null 2>&1
+codex $CODEX_BASE_ARGS exec '$code-review' resume --last >/dev/null 2>&1
 
 review_loop "Code" "$CODE_FILE" "/code-fix"
 
