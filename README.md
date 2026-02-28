@@ -1,35 +1,62 @@
-# ClauDex-Coder
+# ClauDex Coder
 
-ClauDex Coder - When Claude and Codex code together
+ClauDex Coder provides two Bash launchers for running a Claude-led plan and implementation loop with a second reviewer:
 
-## What It Does
-
-`claudex-coder` orchestrates a Claude plus Codex workflow that plans, reviews, implements, and re-reviews until quality gates pass.
-
-For each run, it:
-
-- Accepts a branch name plus a prompt.
-- Uses the current branch when branch name is empty, or creates a new branch when a branch name is provided.
-- Sends your request to Claude with `/plan-it`.
-- Runs Codex `$plan-review`.
-- Repeats plan updates with Claude `/plan-update` plus Codex re-review until `.ai/branches/<branch-slug>/plan-review.md` contains `ALL GOOD`.
-- Runs implementation with Claude `/code-it`.
-- Runs Codex `$code-review`.
-- Repeats fixes with Claude `/code-fix` plus Codex re-review until `.ai/branches/<branch-slug>/code-review.md` contains `ALL GOOD`.
-- Stops with a clear error if `git`, `gh`, `claude`, or `codex` is missing from `PATH`.
-- Uses `MAX_TRIES` and `SLEEP_SECS` environment variables to control retry behavior.
+- `bin/claudex-coder` pairs Claude with Codex CLI.
+- `bin/claursor-coder` pairs Claude with Cursor Agent.
 
 - Author: Mike Lopez <e@mikelopez.com>
 - Copyright (C) 2026 Mike Lopez <e@mikelopez.com>
 
+## What It Does
+
+Both launchers follow the same control flow:
+
+1. Accept an optional branch name plus a prompt.
+2. Use the current branch when the branch argument is empty, or create a new branch when one is provided.
+3. Run Claude with `/plan-it`.
+4. Review the generated plan.
+5. Loop on Claude `/plan-update` plus re-review until `.ai/branches/<branch-slug>/plan-review.md` contains `ALL GOOD`.
+6. Run Claude with `/code-it`.
+7. Review the implementation.
+8. Loop on Claude `/code-fix` plus re-review until `.ai/branches/<branch-slug>/code-review.md` contains `ALL GOOD`.
+9. Stop early if required CLIs are missing from `PATH`.
+
+The retry loop is controlled by:
+
+- `MAX_TRIES` with a default of `20`
+- `SLEEP_SECS` with a default of `0.2`
+
+## Launcher Differences
+
+### `claudex-coder`
+
+- Requires `codex`
+- Uses `codex --sandbox workspace-write -a never`
+- Runs Codex reviews with `$plan-review` and `$code-review`
+- Reuses the last Codex session with `resume --last` inside review loops
+
+### `claursor-coder`
+
+- Requires `cursor-agent`
+- Uses `cursor-agent --trust --print --model gpt-5.3-codex-high`
+- Runs Cursor reviews with `/plan-review` and `/code-review`
+- Uses `--continue` for follow-up reviews inside review loops
+
 ## Requirements
 
-- Linux only
+Common requirements:
+
+- Linux
 - `bash`
 - `git`
 - [GitHub CLI (`gh`)](https://cli.github.com/)
 - [Claude CLI](https://docs.anthropic.com/en/docs/claude-code)
-- [Codex CLI](https://developers.openai.com/codex/cli/)
+
+Choose the reviewer CLI that matches the launcher you want to use:
+
+- [Codex CLI](https://developers.openai.com/codex/cli/) for `bin/claudex-coder`
+- `cursor-agent` for `bin/claursor-coder`
 
 ## Installation
 
@@ -40,52 +67,73 @@ git clone https://github.com/easterncoder/claudex-coder.git
 cd claudex-coder
 ```
 
-### 2. Install the launcher script
-
-Choose one of the following:
+### 2. Install one or both launchers
 
 ```bash
-# Option A: install globally
 sudo install -m 0755 bin/claudex-coder /usr/local/bin/claudex-coder
+sudo install -m 0755 bin/claursor-coder /usr/local/bin/claursor-coder
 ```
 
+If you prefer to run them from the repo directly:
+
 ```bash
-# Option B: run from this repo directly
 chmod +x bin/claudex-coder
+chmod +x bin/claursor-coder
 ```
 
-### 3. Install skills
+### 3. Install the shared skills
 
-Install the contents of `skills/` into your preferred CLI skills directory:
+This repository ships the workflow skills in `skills/`.
+
+Install them for Claude:
 
 ```bash
-# Codex
+mkdir -p "$HOME/.claude/skills"
+cp -R skills/. "$HOME/.claude/skills/"
+```
+
+Install them for Codex if you use `claudex-coder`:
+
+```bash
 mkdir -p "$HOME/.codex/skills"
 cp -R skills/. "$HOME/.codex/skills/"
 ```
 
-```bash
-# Claude
-mkdir -p "$HOME/.claude/skills"
-cp -R skills/. "$HOME/.claude/skills/"
-```
-You must install skills into both directories for this workflow to work.
+If you use `claursor-coder`, make sure your `cursor-agent` setup exposes the same workflow commands from this repository:
+
+- `/plan-it`
+- `/plan-review`
+- `/plan-update`
+- `/code-it`
+- `/code-review`
+- `/code-fix`
 
 ## Setup Check
 
-Verify required CLIs are available:
+Verify the common CLIs:
 
 ```bash
 git --version
 gh --version
 claude --version
+```
+
+Verify the reviewer CLI for the launcher you plan to run:
+
+```bash
 codex --version
+```
+
+```bash
+cursor-agent --version
 ```
 
 ## Usage
 
+Both launchers use the same argument shape:
+
 ```bash
-claudex-coder [branch-name] <prompt...>
+<launcher> [branch-name] <prompt...>
 ```
 
 To use the current branch, pass an empty string for `branch-name`.
@@ -93,13 +141,13 @@ To use the current branch, pass an empty string for `branch-name`.
 Examples:
 
 ```bash
-# Use current branch
 claudex-coder "" "add caching to API responses"
+claudex-coder feature/api-caching "add caching to API responses"
 ```
 
 ```bash
-# Create and use a new branch
-claudex-coder feature/api-caching "add caching to API responses"
+claursor-coder "" "add caching to API responses"
+claursor-coder feature/api-caching "add caching to API responses"
 ```
 
 ## License
